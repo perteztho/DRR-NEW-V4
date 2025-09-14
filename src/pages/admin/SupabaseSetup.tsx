@@ -1,5 +1,6 @@
 import React from 'react';
 import SupabaseConnectionGuide from '../../components/SupabaseConnectionGuide';
+import MigrationRunner from '../../components/MigrationRunner';
 import SEOHead from '../../components/SEOHead';
 
 const SupabaseSetup: React.FC = () => {

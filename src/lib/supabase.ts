@@ -171,6 +171,41 @@ const stopHeartbeat = () => {
     heartbeatInterval = null;
   }
 };
+
+export const testConnection = async (): Promise<{ success: boolean; message: string }> => {
+  try {
+    // Test basic connection with a simple query
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('count')
+      .limit(1);
+    
+    if (error) {
+      // If profiles table doesn't exist, try a different approach
+      if (error.code === '42P01') {
+        // Try to check if we can connect to Supabase at all
+        const { data: authData, error: authError } = await supabase.auth.getSession();
+        if (authError) {
+          throw new Error(`Supabase connection failed: ${authError.message}`);
+        }
+        throw new Error('Database tables not found. Please run the database migrations first.');
+      }
+      throw new Error(`Database query failed: ${error.message}`);
+    }
+
+    return {
+      success: true,
+      message: 'Successfully connected to Supabase'
+    };
+  } catch (error: any) {
+    console.error('❌ Supabase connection failed (attempt 2):', error.message);
+    return {
+      success: false,
+      message: `Connection failed: ${error.message}. ${error.message.includes('does not exist') ? 'Run database migrations to create required tables.' : ''}`
+    };
+  }
+};
+
 // Initialize connection
 testConnection();
 
