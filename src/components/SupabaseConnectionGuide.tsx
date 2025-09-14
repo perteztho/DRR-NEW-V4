@@ -13,10 +13,12 @@ import {
 } from 'lucide-react';
 import ModernCard from './ModernCard';
 import ModernButton from './ModernButton';
+import MigrationRunner from './MigrationRunner';
 
 const SupabaseConnectionGuide: React.FC = () => {
   const [copiedStep, setCopiedStep] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+  const [showMigrationRunner, setShowMigrationRunner] = useState(false);
 
   const copyToClipboard = async (text: string, stepId: string) => {
     try {
@@ -137,6 +139,35 @@ VITE_APP_VERSION=2.0.0`;
           />
         </div>
       </div>
+
+      {/* Migration Runner Section */}
+      <ModernCard className="p-6 bg-red-50 border-red-200">
+        <div className="flex items-start space-x-4">
+          <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={24} />
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-red-900 mb-2">
+              Database Tables Missing?
+            </h3>
+            <p className="text-red-800 mb-4">
+              If you're seeing "relation does not exist" errors, your database tables haven't been created yet. 
+              Use the migration runner below to automatically create all required tables.
+            </p>
+            <ModernButton
+              onClick={() => setShowMigrationRunner(!showMigrationRunner)}
+              variant="warning"
+              icon={Database}
+            >
+              {showMigrationRunner ? 'Hide' : 'Show'} Migration Runner
+            </ModernButton>
+          </div>
+        </div>
+      </ModernCard>
+
+      {showMigrationRunner && (
+        <ModernCard className="p-6">
+          <MigrationRunner />
+        </ModernCard>
+      )}
 
       {/* Setup Steps */}
       <div className="space-y-6">
